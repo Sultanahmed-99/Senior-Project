@@ -65,7 +65,7 @@ class FaceDetectorMesh():
                     #furure more need to save all in a list 
                     #which will be done in a module will be much faster
             
-        return img , id , faces
+        return img , id , faces , ih , iw
         
         
 
@@ -79,11 +79,13 @@ def main():
     Ptime = 0 
     # creating object from class face mesh detector
     detector = FaceDetectorMesh()
+    save_dir = "Desktop/images/"
+    counter = 0 
     while True:
         # from camera capture frames and image
         red , img = cam.read()
         # start detecting the face using face mesh calling them from detector moudle
-        img ,id ,faces = detector.findFaceMesh(img)
+        img ,id ,faces , ih , iw = detector.findFaceMesh(img)
         # showing the faces land marks values also there id 
         print(id , faces)
         # current time running. 
@@ -97,7 +99,14 @@ def main():
         cv2.putText(img , 'FPS : {}'.format(int(fps)) , (20,70) , cv2.FONT_HERSHEY_COMPLEX
                    , 3 , (0,255,255) , thickness = 3)
         # SHOWING IMAGE FROM CAPTURED CAM 
+        # Crop the image to the face
+        crop_img = img[faces[1]:faces[1]+ih, faces[0]:faces[0]+iw]
+
+        # Save the cropped image to the specified directory
+        cv2.imwrite(save_dir + "crop_img_{}.png".format(img_counter), crop_img)
+        img_counter += 1
         cv2.imshow('ORGINAL IMAGE' , img)
+        cv2.imshow('Croped IMAGE' , crop_img)
         # ESC | EXIT FROM THE FRAME SHOUTDOWN CAM | Frame
         if cv2.waitKey(100) == 27:
             break 
